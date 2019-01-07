@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>网络通断状况展示</title>
+</head>
+<body>
+    <div id='main1' style='width:1200px;height:300px;'></div>
+	<div id='main2' style='width:600px;height:400px;float:left;overflow:hidden;'></div>
+	<div id='main3' style='width:600px;height:400px;float:center;overflow:hidden;'></div>
+    <script src='C:/Users/youliangyu/Downloads/echarts.js'></script>
+	<script src='C:/Users/youliangyu/Downloads/jquery-3.3.1.min.js'></script>
+    <script>
+        var myChart1 = echarts.init(document.getElementById('main1'));
+		var myChart2 = echarts.init(document.getElementById('main2'));
+		var myChart3 = echarts.init(document.getElementById('main3'));
+		function randomData() {
+			now = new Date(+now + oneDay);
+			value = value + Math.random() * 21 - 10;
+			return {
+				name: now.toString(),
+				value: [
+					[now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'),
+					Math.round(value)
+				]
+			}
+		}
+
+		var data = [];
+		var now = +new Date(2019, 1, 7);
+		var oneDay = 24 * 3600 * 1000;
+		var value = Math.random() * 100;
+		for (var i = 0; i < 100; i++) {
+			data.push(randomData());
+		}
+		//折线图
+		option1 = {
+			
+			title: {
+				text: '网络通断状况展示\n\n\n                                                                                 网络时延展示'
+			},
+			tooltip: {
+				trigger: 'axis',
+				formatter: function (params) {
+					params = params[0];
+					var date = new Date(params.name);
+					return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' : ' + params.value[1];
+				},
+				axisPointer: {
+					animation: false
+				}
+			},
+			xAxis: {
+				type: 'time',
+				splitLine: {
+					show: false,
+				}
+			},
+			yAxis: {
+				type: 'value',
+				boundaryGap: [0, '100%'],
+				splitLine: {
+					show: false,
+				}
+			},
+			series: [{
+				name: '模拟数据',
+				type: 'line',
+				showSymbol: false,
+				hoverAnimation: false,
+				data: data
+			}]
+		};
+
+		setInterval(function () {
+
+			for (var i = 0; i < 5; i++) {
+				data.shift();
+				data.push(randomData());
+			}
+
+			myChart.setOption({
+				series: [{
+					data: data
+				}]
+			});
+		}, 1000);
+		myChart1.setOption(option1);
+		//饼图
+		var option2 = {
+
+			title: {
+				text: '网络连接状况',
+				left: 'center',
+				top: 20,
+				textStyle: {
+					color: '#ccc'
+				}
+			},
+
+			tooltip : {
+				trigger: 'item',
+				formatter: "{a} <br/>{b} : {c} ({d}%)"
+			},
+
+			visualMap: {
+				show: false,
+				min: 80,
+				max: 600,
+				inRange: {
+					colorLightness: [0, 1]
+				}
+			},
+			series : [{
+					name:'此PC',
+					type:'pie',
+					radius : '55%',
+					center: ['50%', '50%'],
+					data:[
+						{value:200, name:'网络未连接'},
+						{value:450, name:'网络连接通畅'},
+						{value:150, name:'网络连接不通畅'},
+					].sort(function (a, b) { return a.value - b.value; }),
+					roseType: 'radius',
+					label: {
+						normal: {
+							textStyle: {
+								color: 'red'
+							}
+						}
+					},
+					labelLine: {
+						normal: {
+							lineStyle: {
+								color: 'red'
+							},
+							smooth: 0.2,
+							length: 10,
+							length2: 20
+						}
+					},
+					itemStyle: {
+						normal: {
+							color: '#c23531',
+							shadowBlur: 200,
+							shadowColor: 'rgba(0, 0, 0, 0.5)'
+						}
+					},
+
+					animationType: 'scale',
+					animationEasing: 'elasticOut',
+					animationDelay: function (idx) {
+						return Math.random() * 200;
+					}
+				}]
+		};
+        //使用刚指定的配置项和数据显示图表
+		myChart2.setOption(option2);
+		
+		//测速表
+		var option3= {
+			
+			tooltip : {
+				formatter: "{a} <br/>{b} : {c}%"
+			},
+			toolbox: {
+				feature: {
+				}
+			},
+			series: [
+				{
+					name: '网速',
+					type: 'gauge',
+					detail: {formatter:'{value}mb/s'},
+					data: [{value: 13.66, name: '网速'}]
+				}
+			]
+		};
+
+		setInterval(function () {
+			option.series[0].data[0].value = (Math.random() * 100).toFixed(2) - 0;
+			myChart.setOption(option, true);
+		},1000);
+		myChart3.setOption(option3);
+		
+    </script>
+</body>
+</html>
